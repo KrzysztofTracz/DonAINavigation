@@ -19,6 +19,9 @@
 #include "HAL/RunnableThread.h"
 #include "HAL/PlatformProcess.h"
 
+DECLARE_STATS_GROUP(TEXT("DonNavigation"), STATGROUP_DonNavigationWorker, STATCAT_Advanced);
+DECLARE_CYCLE_STAT(TEXT("Worker Time"), STAT_DonNavigationWorkerTime, STATGROUP_DonNavigationWorker);
+
 FDonNavigationWorker::FDonNavigationWorker()
 {
 
@@ -63,13 +66,17 @@ uint32 FDonNavigationWorker::Run()
 
 	while (StopTaskCounter.GetValue() == 0)
 	{
-		Manager->ReceiveAsyncNavigationTasks();
-		Manager->ReceiveAsyncAbortRequests();
-		Manager->ReceiveAsyncCollisionTasks();
+		{
+			SCOPE_CYCLE_COUNTER(STAT_DonNavigationWorkerTime);
 
-		SolveNavigationTasks();
+			Manager->ReceiveAsyncNavigationTasks();
+			Manager->ReceiveAsyncAbortRequests();
+			Manager->ReceiveAsyncCollisionTasks();
 
-		//FPlatformProcess::Sleep(0.2f);
+			SolveNavigationTasks();
+		}
+
+		FPlatformProcess::Sleep(0.01f);
 	}
 	return 0;
 }
