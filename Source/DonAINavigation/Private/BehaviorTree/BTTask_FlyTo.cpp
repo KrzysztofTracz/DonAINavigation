@@ -82,6 +82,11 @@ EBTNodeResult::Type UBTTask_FlyTo::SchedulePathfindingRequest(UBehaviorTreeCompo
 	auto blackboard  =  pawn ? pawn->GetController()->FindComponentByClass<UBlackboardComponent>() : NULL;
 
 	NavigationManager =  UDonNavigationHelper::DonNavigationManagerForActor(pawn);
+
+	if (NavigationManager == nullptr)
+	{
+		return EBTNodeResult::Failed;
+	}
 	
 	// Validate internal state:
 	if (!pawn || !myMemory || !blackboard || !NavigationManager)
