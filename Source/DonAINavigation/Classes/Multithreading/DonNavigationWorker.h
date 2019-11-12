@@ -15,7 +15,11 @@
 
 #pragma once
 
+#include "HAL/Runnable.h"
+#include "HAL/ThreadSafeCounter.h"
+
 class ADonNavigationManager;
+class FRunnableThread;
 
 class FDonNavigationWorker: public FRunnable
 {

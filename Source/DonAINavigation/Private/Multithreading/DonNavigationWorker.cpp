@@ -13,9 +13,11 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "Multithreading/DonNavigationWorker.h"
-#include "../DonAINavigationPrivatePCH.h"
-
+#include "DonAINavigation.h"
 #include "DonNavigationManager.h"
+
+#include "HAL/RunnableThread.h"
+#include "HAL/PlatformProcess.h"
 
 FDonNavigationWorker::FDonNavigationWorker()
 {

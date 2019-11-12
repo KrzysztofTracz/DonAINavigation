@@ -445,6 +445,23 @@ struct FDoNNavigationQueryData
 		return PathSolutionRaw.Num() - optimizer_j > QueryParams.MaxOptimizerSweepAttemptsPerNode;
 	}
 
+	void EmptyCalculationData()
+	{
+		Frontier = DoNNavigation::PriorityQueue<FDonNavigationVoxel*>();
+		VolumeVsCostMap.Empty();
+		VolumeVsGoalTrajectoryMap.Empty();
+		Frontier_Unbound = DoNNavigation::PriorityQueue<FDonNavigationLocVector>();
+		VolumeVsCostMap_Unbound.Empty();
+		VolumeVsGoalTrajectoryMap_Unbound.Empty();
+	}
+
+	void EmptyResultData()
+	{
+		VolumeSolution.Empty();
+		VolumeSolutionOptimized.Empty();
+		PathSolutionRaw.Empty();
+		PathSolutionOptimized.Empty();
+	}
 };
 
 /** 
@@ -469,7 +486,8 @@ USTRUCT()
 struct FDonNavigationQueryTask : public FDonNavigationTask
 {
 	GENERATED_USTRUCT_BODY()	
-
+	
+	UPROPERTY()
 	FDoNNavigationQueryData Data;
 
 	UPROPERTY()
@@ -671,7 +689,8 @@ protected:
 	FCollisionObjectQueryParams VoxelCollisionObjectParams;
 	FCollisionQueryParams VoxelCollisionQueryParams;
 	FCollisionQueryParams VoxelCollisionQueryParams2;
-	TMap<FDonNavigationVoxel*, TArray <FDonNavigationVoxel*>> NavGraphCache;
+	TMap<FDonNavigationVoxel*, TArray <FDonNavigationVoxel*>> NavGraphCache_WorkerThread;
+	TMap<FDonNavigationVoxel*, TArray <FDonNavigationVoxel*>> NavGraphCache_GameThread;
 	TMap<FDonMeshIdentifier, FDonVoxelCollisionProfile> VoxelCollisionProfileCache_WorkerThread;
 	TMap<FDonMeshIdentifier, FDonVoxelCollisionProfile> VoxelCollisionProfileCache_GameThread;
 
@@ -729,6 +748,12 @@ public:
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ObstacleDetection)
 	TArray<float> AutoCorrectionGuessList;
+
+	static const int32 NumTweaks = 6 + 8;
+	/*
+	* Directions used to apply AutoCorrectionGuessList.
+	*/
+	static const FVector LocationTweaks[NumTweaks];
 
 	/* Estimates the maximum possible penetration that can occur based on how Unreal's Physx handles collisions.
 	*   The default is a surprisingly high value, but this was derived from actual tests with the sample project's "thin glass tubes" usecase*/
@@ -836,10 +861,10 @@ protected:
 	static const int32 VolumeImplicitDOF = 12; // Implicit degrees of freedom: formed by the combination of any 2 direct degrees of freedom proving implicit access to a diagonal neighboring voxel
 
 	// 6 DOF - directly usable for travel
-	//						        0    1    2     3    4    5   
-	int x6DOFCoords[Volume6DOF] = { 0,   0,   1,   -1,   0,   0  };
-	int y6DOFCoords[Volume6DOF] = { 1,  -1,   0,    0,   0,   0, };
-	int z6DOFCoords[Volume6DOF] = { 0,   0,   0,    0,   1,  -1, };	
+	//						          5    0    1    2    3    4 
+	int x6DOFCoords[Volume6DOF] = {   0,   0,   0,   1,  -1,   0, };
+	int y6DOFCoords[Volume6DOF] = {   0,   1,  -1,   0,   0,   0, };
+	int z6DOFCoords[Volume6DOF] = {  -1,   0,   0,   0,   0,   1, };
 
 	// Note:- 26 DOF cannot be directly used for travel as access to (x, y, z) does not guarantee access to (x + 1, y, z + 1) (etc)
 	// unless both (x + 1, y, z) and (x, y, z + 1) are also accessible). In the latter case, such DOFs are referred to as implicit DOFs. 12 such implict DOFs are currently used.
@@ -860,7 +885,8 @@ private:
 	// Scheduled Tasks: 
 
 	//(owned by worker thread)
-	TArray<FDonNavigationQueryTask,	TInlineAllocator<25>>  ActiveNavigationTasks;	
+	UPROPERTY()
+	TArray<FDonNavigationQueryTask>  ActiveNavigationTasks;	
 	TArray<FDonNavigationDynamicCollisionTask, TInlineAllocator<25>> ActiveDynamicCollisionTasks;
 
 	//(owned by game thread)
@@ -1241,6 +1267,8 @@ public:
 protected:
 	bool CanNavigateByCollisionProfile(FDonNavigationVoxel* Volume, const FDonVoxelCollisionProfile& CollisionToTest);
 	bool CanNavigateByCollisionProfile(FVector Location, const FDonVoxelCollisionProfile& CollisionToTest);
+	bool CheckCanNavigateByOverlapResults(const TArray<FOverlapResult>& OverlapResults, ECollisionChannel AdditionalCollisionChannel = ECC_MAX) const;
+	bool CheckCanNavigateByHitResults(const TArray<FHitResult>& HitResults, int32* OutFirstBlockingIdx = nullptr) const;
 
 private:
 

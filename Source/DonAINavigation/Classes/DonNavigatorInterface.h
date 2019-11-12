@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include "UObject/Interface.h"
 #include "DonNavigatorInterface.generated.h"
 
 UINTERFACE()

@@ -13,7 +13,7 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "BehaviorTree/BTTask_FlyTo.h"
-#include "../DonAINavigationPrivatePCH.h"
+#include "DonAINavigation.h"
 #include "DonNavigatorInterface.h"
 
 #include "BehaviorTree/BlackboardComponent.h"
@@ -21,6 +21,7 @@
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Vector.h"
 #include "BehaviorTree/BTFunctionLibrary.h"
 
+#include "Engine/Engine.h"
 #include "Runtime/AIModule/Classes/AIController.h"
 #include "VisualLogger/VisualLogger.h"
 
@@ -132,7 +133,7 @@ void UBTTask_FlyTo::AbortPathfindingRequest(UBehaviorTreeComponent& OwnerComp, u
 	APawn* pawn = OwnerComp.GetAIOwner()->GetPawn();
 	FBT_FlyToTarget* myMemory = (FBT_FlyToTarget*)NodeMemory;
 
-	if (NavigationManager && pawn && myMemory)
+	if (NavigationManager && /*pawn &&*/ myMemory)
 	{
 		NavigationManager->AbortPathfindingTask(pawn);
 

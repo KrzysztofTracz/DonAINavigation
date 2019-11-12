@@ -15,7 +15,6 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "DonEnvQueryTest_Navigation.h"
-#include "../DonAINavigationPrivatePCH.h"
 
 #include "DonNavigationManager.h"
 #include "AIController.h"
@@ -23,6 +22,7 @@
 #include "EnvironmentQuery/Contexts/EnvQueryContext_Querier.h"
 #include "EnvironmentQuery/Items/EnvQueryItemType_Point.h"
 
+#include "EngineUtils.h"
 
 
 UDonEnvQueryTest_Navigation::UDonEnvQueryTest_Navigation(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -85,14 +85,13 @@ void UDonEnvQueryTest_Navigation::RunTest(FEnvQueryInstance& QueryInstance) cons
 
 		bool ItemValid = false;
 		ItemValid = DonNav->CanNavigate(ItemLocation);
-		FVector NavLocation;
 		if (bSearchRandomLocation) {
 			if (!ItemValid) {
-				NavLocation = DonNav->FindRandomPointAroundOriginInNavWorld(ownerActor, ItemLocation, RandomLocationRadius, ItemValid, -1.f, 15.f, RandomLocationMaxAttempts);
-			}
+				FVector NavLocation = DonNav->FindRandomPointAroundOriginInNavWorld(ownerActor, ItemLocation, RandomLocationRadius, ItemValid, -1.f, 15.f, RandomLocationMaxAttempts);
 
-			if (ItemTypeCDO) {
-				ItemTypeCDO->SetItemNavLocation(It.GetItemData(), FNavLocation(NavLocation));
+				if (ItemTypeCDO) {
+					ItemTypeCDO->SetItemNavLocation(It.GetItemData(), FNavLocation(NavLocation));
+				}
 			}
 		}
 

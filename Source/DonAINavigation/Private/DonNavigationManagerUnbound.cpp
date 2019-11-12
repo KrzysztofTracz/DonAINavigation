@@ -13,8 +13,6 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "DonNavigationManagerUnbound.h"
-#include "DonAINavigationPrivatePCH.h"
-
 ADonNavigationManagerUnbound::ADonNavigationManagerUnbound(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	bIsUnbound = true;
@@ -119,35 +117,21 @@ TArray<FVector> ADonNavigationManagerUnbound::NeighborsAsVectors(FVector Locatio
 	}
 
 	// Implicit:
-	
-	// X		
 
-	if (CanNavigate(LocationAtId(Location, 1, 0, 0)) && CanNavigate(LocationAtId(Location, 0, 0, 1)))
-		neighbors.Add(LocationAtId(Location, 1, 0, 1));
-
-	if (CanNavigate(LocationAtId(Location, -1, 0, 0)) && CanNavigate(LocationAtId(Location, 0, 0, 1)))
-		neighbors.Add(LocationAtId(Location, -1, 0, 1));
-
+	// Below
 	if (CanNavigate(LocationAtId(Location, 1, 0, 0)) && CanNavigate(LocationAtId(Location, 0, 0, -1)))
 		neighbors.Add(LocationAtId(Location, 1, 0, -1));
 
 	if (CanNavigate(LocationAtId(Location, -1, 0, 0)) && CanNavigate(LocationAtId(Location, 0, 0, -1)))
 		neighbors.Add(LocationAtId(Location, -1, 0, -1));
-
-	//Y
-	if (CanNavigate(LocationAtId(Location, 0, 1, 0)) && CanNavigate(LocationAtId(Location, 0, 0, 1)))
-		neighbors.Add(LocationAtId(Location, 0, 1, 1));
-
-	if (CanNavigate(LocationAtId(Location, 0, -1, 0)) && CanNavigate(LocationAtId(Location, 0, 0, 1)))
-		neighbors.Add(LocationAtId(Location, 0, -1, 1));
-
 	if (CanNavigate(LocationAtId(Location, 0, 1, 0)) && CanNavigate(LocationAtId(Location, 0, 0, -1)))
 		neighbors.Add(LocationAtId(Location, 0, 1, -1));
 
 	if (CanNavigate(LocationAtId(Location, 0, -1, 0)) && CanNavigate(LocationAtId(Location, 0, 0, -1)))
 		neighbors.Add(LocationAtId(Location, 0, -1, -1));
 
-	//Z
+
+	// Around
 	if (CanNavigate(LocationAtId(Location, 1, 0, 0)) && CanNavigate(LocationAtId(Location, 0, 1, 0)))
 		neighbors.Add(LocationAtId(Location, 1, 1, 0));
 
@@ -158,7 +142,20 @@ TArray<FVector> ADonNavigationManagerUnbound::NeighborsAsVectors(FVector Locatio
 		neighbors.Add(LocationAtId(Location, 1, -1, 0));
 
 	if (CanNavigate(LocationAtId(Location, -1, 0, 0)) && CanNavigate(LocationAtId(Location, 0, -1, 0)))
-		neighbors.Add(LocationAtId(Location, -1, -1, 0));	
+		neighbors.Add(LocationAtId(Location, -1, -1, 0));
+
+	// Above
+	if (CanNavigate(LocationAtId(Location, 1, 0, 0)) && CanNavigate(LocationAtId(Location, 0, 0, 1)))
+		neighbors.Add(LocationAtId(Location, 1, 0, 1));
+
+	if (CanNavigate(LocationAtId(Location, -1, 0, 0)) && CanNavigate(LocationAtId(Location, 0, 0, 1)))
+		neighbors.Add(LocationAtId(Location, -1, 0, 1));
+
+	if (CanNavigate(LocationAtId(Location, 0, 1, 0)) && CanNavigate(LocationAtId(Location, 0, 0, 1)))
+		neighbors.Add(LocationAtId(Location, 0, 1, 1));
+
+	if (CanNavigate(LocationAtId(Location, 0, -1, 0)) && CanNavigate(LocationAtId(Location, 0, 0, 1)))
+		neighbors.Add(LocationAtId(Location, 0, -1, 1));
 
 	return neighbors;
 }

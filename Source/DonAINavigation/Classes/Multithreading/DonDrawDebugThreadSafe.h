@@ -14,6 +14,9 @@
 
 #pragma once
 
+#include "CoreTypes.h"
+#include "Math/Vector.h"
+
 struct FDrawDebugLineRequest
 {
 	FVector LineStart;

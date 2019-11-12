@@ -16,8 +16,6 @@
 
 #include "ModuleManager.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(DoNNavigationLog, Log, All);
-
 /**
  * The public interface to this module
  */

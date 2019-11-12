@@ -13,7 +13,8 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "DonNavigationHelper.h"
-#include "DonAINavigationPrivatePCH.h"
+#include "Engine/Engine.h"
+#include "EngineUtils.h"
 
 ADonNavigationManager* UDonNavigationHelper::DonNavigationManager(UObject* WorldContextObject)
 {
